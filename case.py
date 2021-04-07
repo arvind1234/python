@@ -1,20 +1,31 @@
 import requests
 import math
 import sys
-
+import argparse
+ 
+# create parser
+parser = argparse.ArgumentParser()
+ 
 ###
 ## needs python3
 ## run as 
 ## python3 case.py <receipt#>  <form> <center> <offset>
 ## all parameters are optional and defaults to 2190218894, i-765, 120000
 ###
-url = "https://egov.uscis.gov/casestatus/mycasestatus.do"
-l = len(sys.argv)
-r = int(sys.argv[1]) if l > 1 else 2190218894 # i-765
+# add arguments to the parser
+parser.add_argument("--receipt", "-r", dest="receipt", type=int, help="Number portion of the receipt without center prefix")
+parser.add_argument("--center", "-c", dest="center", default="LIN", help="Center prefix of receipt number, defaults to LIN")
+parser.add_argument("--offset", "-o", dest="offset", type=int, default=120000, help="How far back do you want to start, defaults to 120000")
+parser.add_argument("--form", "-f", dest="form", default="i-765", help="Form you are searching for in lower case, defaults to i-765")
+ 
+# parse the arguments
+args = parser.parse_args()
 
-form = sys.argv[2] if l > 2 else  "i-765"
-prefix = sys.argv[3] if l > 3 else  "LIN"
-offset = int(sys.argv[4]) if l > 4 else 120000
+url = "https://egov.uscis.gov/casestatus/mycasestatus.do"
+r = args.receipt
+form = args.form
+prefix = args.center
+offset = args.offset
 r -= offset
 
 print(F"Processing receipt number {r} with offset {offset} with form {form} in center {prefix} ")
